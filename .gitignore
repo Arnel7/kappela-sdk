@@ -1,0 +1,6 @@
+node_modules/
+dist/
+*.js.map
+*.tgz
+test.mjs
+test-all.mjs
