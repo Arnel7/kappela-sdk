@@ -1,25 +1,37 @@
 {
   "name": "@kappelas/sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Official Kappela SDK — Bot API and Personal Automation",
   "author": "Arnell LAWSON <arnellawson7@gmail.com>",
   "license": "MIT",
-  "engines": { "node": ">=18" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Arnel7/kappelas-sdk.git"
+  },
+  "homepage": "https://github.com/Arnel7/kappelas-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/Arnel7/kappelas-sdk/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types":   "./dist/index.d.ts",
-      "import":  "./dist/index.mjs",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean",
-    "dev":   "tsup src/index.ts --format cjs,esm --dts --watch",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -27,8 +39,8 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "@types/ws":   "^8.5.13",
-    "tsup":        "^8.3.0",
-    "typescript":  "^5.7.0"
+    "@types/ws": "^8.5.13",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0"
   }
 }
