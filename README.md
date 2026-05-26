@@ -58,25 +58,59 @@ me.start()
 
 ## TypeScript & autocomplete
 
-The SDK is written entirely in TypeScript and ships `.d.ts` declarations for every type, parameter, and return value. Type your client variable as `KappelaBot` / `KappelaUser` once, and your IDE will show every available method, its required and optional parameters, and what it returns — no docs tab needed.
+The SDK is written entirely in TypeScript and ships `.d.ts` declarations for every type, parameter, and return value. It works with both **TypeScript and plain JavaScript** — same install, same import.
+
+### TypeScript
 
 ```ts
+import { KappelaBot } from '@kappela/sdk'
+
+const bot = new KappelaBot({ token: '...' })
+// full autocomplete out of the box
+```
+
+### Plain JavaScript (Node.js)
+
+Works with `require` or `import` — no TypeScript needed:
+
+```js
+const { KappelaBot } = require('@kappela/sdk')
+
+const bot = new KappelaBot({ token: '...' })
+bot.on('message', async (msg) => { /* ... */ })
+bot.start()
+```
+
+**To get full autocomplete in JavaScript**, add `// @ts-check` at the top of your file — VS Code will read the bundled `.d.ts` declarations automatically and give you the same IDE experience as TypeScript:
+
+```js
+// @ts-check
+const { KappelaBot } = require('@kappela/sdk')
+
 const bot = new KappelaBot({ token: '...' })
 
-bot.messages.          // → send, sendPhoto, sendVideo, sendDocument, sendAudio, sendCarousel, sendTyping, delete
-bot.chats.             // → list, iterate
-bot.webhooks.          // → set, getInfo, delete
-bot.profile.           // → get
+bot.messages.   // → send, sendPhoto, sendVideo, sendDocument, sendAudio, sendCarousel, edit, sendTyping, delete
+bot.chats.      // → list, iterate
+bot.webhooks.   // → set, getInfo, delete
+bot.profile.    // → get
 ```
 
 All events are typed too:
 
-```ts
+```js
+// @ts-check
 bot.on('message', (msg) => {
   msg.text          // string | null
   msg.chat_id       // number
   msg.sender_name   // string | null
   msg.created_at    // number (Unix seconds)
+})
+
+bot.on('callback_query', (cb) => {
+  cb.sender_id        // string
+  cb.sender_nom       // string | null
+  cb.sender_username  // string | null
+  cb.callback_data    // string
 })
 ```
 
