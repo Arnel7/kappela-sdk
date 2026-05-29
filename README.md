@@ -1022,16 +1022,28 @@ await bot.messages.send({
 
 ### Block code
 
-Wrap in triple backticks. The app renders it as a card with a one-tap **copy** button:
+Triple backticks render as a **block code card** — only when placed on their own line. Inline backticks (mid-sentence) render as styled monospace text instead.
+
+| Position | Rendu |
+|----------|-------|
+| `` `code` `` mid-sentence | Monospace with tinted background, stays inline |
+| ` ```code``` ` on its own line | Full card with dark background + one-tap **copy** button |
 
 ````ts
+// Inline — stays in the text flow
+await bot.messages.send({
+  chat_id: 42,
+  text: 'Your ref is `ORD-2024-001` — keep it handy.',
+})
+
+// Block — must be on its own line to render as a card
 await bot.messages.send({
   chat_id: 42,
   text: 'Your API key:\n```\nsk_live_abc123xyz\n```',
 })
 ````
 
-> The code card is displayed as a separate block below the message text. It collapses to a single line with an ellipsis if too long.
+> The code card collapses to a single line with an ellipsis if the content is too long. Tapping anywhere on the card copies the content to the clipboard.
 
 ### Blockquote / citation
 
@@ -1075,7 +1087,7 @@ The renderer automatically makes the following clickable without any markup:
 | `https://…` or `http://…` | Opens in the in-app browser |
 | `domain.com`, `domain.io`, `domain.fr` … | Prefixed with `https://` and opened |
 | `email@example.com` | Opens the mail app |
-| `+22901 62 86 15 71`, `+229 0162861571` | Opens the dialler |
+| `+229 01 62 86 15 71`, `(229) 0162-861571` | Opens the dialler |
 
 ```ts
 await bot.messages.send({
@@ -1083,6 +1095,13 @@ await bot.messages.send({
   text: 'Visit kappelas.com or contact us at support@kappelas.com',
 })
 ```
+
+> **Supported domain extensions** — only the following TLDs are auto-linked:
+> `com` `org` `net` `fr` `io` `dev` `co` `me` `app` `tech` `info` `biz` `xyz` `eu` `uk` `de` `ru` `tv` `cc` `gg` `ai` `be` `ch` `ca`
+>
+> Country codes like `.bj`, `.sn`, `.ci` are **not** auto-detected — use a full `https://` URL instead: `https://kappelas.bj`.
+
+> **Phone format** — any sequence of 8+ digits is detected, with spaces, dashes, and parentheses allowed: `+229 01 62 86 15 71`, `+22901628​61571`, `(229) 0162-861571` all open the dialler.
 
 ### Combining formats
 
