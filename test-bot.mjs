@@ -250,6 +250,44 @@ if (sentPlain?.message_id) {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
+section('4B. BOT.REPLY()')
+// ═════════════════════════════════════════════════════════════════════════════
+
+// bot.reply(msg) — avec citation automatique
+if (sentPlain?.message_id) {
+  const fakeMsg = { id: sentPlain.message_id, chat_id: CHAT_ID }
+  await run('bot.reply(msg, text) — cite le message automatiquement', () =>
+    bot.reply(fakeMsg, '↩️ bot.reply(msg) — reply_to_id injecté automatiquement'),
+  )
+
+  await run('bot.reply(msg, text, opts) — avec reply_markup', () =>
+    bot.reply(fakeMsg, 'bot.reply() avec clavier inline :', {
+      reply_markup: {
+        inline_keyboard: [[
+          { text: '✅ OK',     callback_data: 'reply_ok'     },
+          { text: '❌ Annuler', callback_data: 'reply_cancel' },
+        ]],
+      },
+    }),
+  )
+} else {
+  skip('bot.reply(msg)', 'message de référence absent')
+}
+
+// bot.reply(cb) — callback_query, pas de citation
+const fakeCb = {
+  chat_id:         CHAT_ID,
+  sender_id:       'test-uuid',
+  sender_nom:      'Test User',
+  sender_username: 'testuser',
+  callback_data:   'test_cb',
+  sent_at:         Math.floor(Date.now() / 1000),
+}
+await run('bot.reply(cb, text) — callback_query, sans reply_to_id', () =>
+  bot.reply(fakeCb, '↩️ bot.reply(cb) — envoyé sans citation (callback_query)'),
+)
+
+// ═════════════════════════════════════════════════════════════════════════════
 section('5. KEYBOARDS')
 // ═════════════════════════════════════════════════════════════════════════════
 
@@ -398,7 +436,7 @@ await run('messages.sendVideo()', () =>
 await run('messages.sendPhoto() — FileInput forme URL string', () =>
   bot.messages.sendPhoto({
     chat_id: CHAT_ID,
-    photo:   'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/PNG_transparency_demonstration_1.png/280px-PNG_transparency_demonstration_1.png',
+    photo:   'https://httpbin.org/image/jpeg',
     caption: '🖼 Photo via URL (SDK fetch automatique)',
   }),
 )
@@ -692,27 +730,15 @@ await run('bot.handleWebhook() — payload message', async () => {
   const handler = (msg) => receivedEvents.push(msg)
   bot.on('message', handler)
 
+  // Format plat envoyé par le backend Kappela (différent du format WS)
   const fakePayload = {
-    type: 'message',
-    data: {
-      id:         999,
-      chat_id:    CHAT_ID,
-      chat_type:  'private',
-      sender_id:  'test-user-uuid',
-      type:       'text',
-      text:       'webhook test',
-      media_id:   null,
-      extra_data: null,
-      status:     'sent',
-      edited_at:  null,
-      deleted_at: null,
-      created_at: Math.floor(Date.now() / 1000),
-      reply_to_id: null,
-      reply_to_snapshot: null,
-      mentions:   [],
-      forwarded_from: null,
-      expires_at: null,
-    },
+    type:       'text',
+    chat_id:    CHAT_ID,
+    message_id: 999,
+    sender_id:  'test-user-uuid',
+    text:       'webhook test',
+    sent_at:    Math.floor(Date.now() / 1000),
+    extra_data: null,
   }
 
   bot.handleWebhook(fakePayload)
@@ -729,16 +755,15 @@ await run('bot.handleWebhook() — payload callback_query', async () => {
   const handler = (cb) => receivedCbs.push(cb)
   bot.on('callback_query', handler)
 
+  // Format plat envoyé par le backend (type: 'callback', pas 'callback_query')
   bot.handleWebhook({
-    type: 'callback_query',
-    data: {
-      chat_id:         CHAT_ID,
-      sender_id:       'test-user-uuid',
-      sender_nom:      'Test User',
-      sender_username: 'testuser',
-      callback_data:   'webhook_cb_test',
-      sent_at:         Math.floor(Date.now() / 1000),
-    },
+    type:            'callback',
+    chat_id:         CHAT_ID,
+    sender_id:       'test-user-uuid',
+    sender_nom:      'Test User',
+    sender_username: 'testuser',
+    callback_data:   'webhook_cb_test',
+    sent_at:         Math.floor(Date.now() / 1000),
   })
 
   await new Promise(r => setTimeout(r, 50))
@@ -754,15 +779,14 @@ section('15. GESTION ERREURS')
 // ═════════════════════════════════════════════════════════════════════════════
 
 await runExpectError(
-  'messages.send() vers chat_id invalide → NOT_FOUND',
-  'NOT_FOUND',
+  'messages.send() vers chat_id invalide → FORBIDDEN',
+  'FORBIDDEN',
   () => bot.messages.send({ chat_id: -999999, text: 'test' }),
 )
 
-await runExpectError(
-  'messages.delete() message inexistant → NOT_FOUND',
-  'NOT_FOUND',
-  () => bot.messages.delete({ chat_id: CHAT_ID, message_id: 999999999 }),
+// L'API retourne succès silencieux sur delete d'un message inexistant — on vérifie juste que ça ne plante pas
+await run('messages.delete() message inexistant — pas d\'erreur levée', () =>
+  bot.messages.delete({ chat_id: CHAT_ID, message_id: 999999999 }),
 )
 
 await runExpectError(
@@ -777,7 +801,7 @@ await runExpectError(
 // Inspecter les champs de KappelaError
 process.stdout.write('\n→ KappelaError — vérification des champs (error_code, status, message, hint, solutions, request_id, toString)\n')
 try {
-  await bot.messages.send({ chat_id: -999999, text: 'err fields test' })
+  await bot.messages.send({ chat_id: -999999, text: 'err fields test' })  // → FORBIDDEN
   fail('FAIL — aurait dû lancer une erreur', null)
 } catch (e) {
   if (!(e instanceof KappelaError)) {

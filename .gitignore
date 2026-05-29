@@ -30,3 +30,4 @@ Thumbs.db
 # ── Coverage ───────────────────────────────────────────────────────────────────
 coverage/
 .nyc_output/
+CHANGELOG.md
