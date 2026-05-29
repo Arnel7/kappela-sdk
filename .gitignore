@@ -19,7 +19,6 @@ npm-debug.log*
 # ── Test files (non-committé — contiennent des tokens) ────────────────────────
 test.mjs
 test-all.mjs
-test-bot.mjs
 
 # ── OS / Editor ────────────────────────────────────────────────────────────────
 .DS_Store
