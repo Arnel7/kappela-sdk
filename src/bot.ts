@@ -81,7 +81,7 @@ export function dispatchWebhookEvent(emitter: Pick<KappelaBot, 'emit'>, body: un
     const cb: CallbackQuery = {
       chat_id:         p['chat_id']         as number,
       sender_id:       p['sender_id']        as string,
-      sender_nom:      (p['sender_nom']      as string | null) ?? null,
+      sender_name:     ((p['sender_name'] ?? p['sender_nom']) as string | null) ?? null,
       sender_username: (p['sender_username'] as string | null) ?? null,
       callback_data:   p['callback_data']    as string,
       sent_at:         p['sent_at']          as number,

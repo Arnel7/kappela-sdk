@@ -278,7 +278,7 @@ if (sentPlain?.message_id) {
 const fakeCb = {
   chat_id:         CHAT_ID,
   sender_id:       'test-uuid',
-  sender_nom:      'Test User',
+  sender_name:     'Test User',
   sender_username: 'testuser',
   callback_data:   'test_cb',
   sent_at:         Math.floor(Date.now() / 1000),
@@ -760,7 +760,7 @@ await run('bot.handleWebhook() — payload callback_query', async () => {
     type:            'callback',
     chat_id:         CHAT_ID,
     sender_id:       'test-user-uuid',
-    sender_nom:      'Test User',
+    sender_name:     'Test User',
     sender_username: 'testuser',
     callback_data:   'webhook_cb_test',
     sent_at:         Math.floor(Date.now() / 1000),

@@ -517,7 +517,7 @@ export interface CallbackQuery {
   /** UUID of the user who clicked the button. */
   sender_id:        string
   /** Display name of the user who clicked (e.g. "Arnel LAWSON"). Null if unresolvable. */
-  sender_nom:       string | null
+  sender_name:      string | null
   /** Username of the user who clicked (e.g. "arnell"). Null if unresolvable. */
   sender_username:  string | null
   /** Value of `callback_data` on the button that was clicked. */

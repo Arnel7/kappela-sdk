@@ -256,15 +256,13 @@ bot.on('message', (msg) => {
 })
 ```
 
-> **`sender_name` vs `sender_nom`** — on `Message` the display-name field is `sender_name` (may be `null`). On `CallbackQuery` it is `sender_nom`. Different names — copy-pasting between the two handlers gives `undefined` silently.
-
 ### `CallbackQuery` fields
 
 ```ts
 bot.on('callback_query', (cb) => {
   cb.chat_id          // number  — chat where the button was clicked
   cb.sender_id        // string  — UUID of the user who clicked
-  cb.sender_nom       // string | null — display name (e.g. "Arnel LAWSON")
+  cb.sender_name      // string | null — display name (e.g. "Arnel LAWSON")
   cb.sender_username  // string | null — username (e.g. "arnell")
   cb.callback_data    // string  — value set on the button
   cb.sent_at          // number  — Unix timestamp (seconds)
