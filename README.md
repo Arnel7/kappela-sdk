@@ -1075,7 +1075,7 @@ The renderer automatically makes the following clickable without any markup:
 | `https://…` or `http://…` | Opens in the in-app browser |
 | `domain.com`, `domain.io`, `domain.fr` … | Prefixed with `https://` and opened |
 | `email@example.com` | Opens the mail app |
-| `+33612345678`, `06 12 34 56 78` | Opens the dialler |
+| `+22901 62 86 15 71`, `+229 0162861571` | Opens the dialler |
 
 ```ts
 await bot.messages.send({
