@@ -1,5 +1,5 @@
 import type { HttpClient } from '../http.js'
-import { buildMediaForm } from '../http.js'
+import { buildMediaForm, resolveFileInput } from '../http.js'
 import type {
   SendMessageParams,
   SendPhotoParams,
@@ -26,10 +26,11 @@ export class MessagesResource {
     return this.http.post(`${this.base}/sendMessage`, params)
   }
 
-  /** Send a photo (image file). */
-  sendPhoto(params: SendPhotoParams): Promise<SendMediaResult> {
+  /** Send a photo (image file or HTTP URL). */
+  async sendPhoto(params: SendPhotoParams): Promise<SendMediaResult> {
+    const file = await resolveFileInput(params.photo, 'photo.jpg')
     return this.http.postForm(`${this.base}/sendPhoto`, () =>
-      buildMediaForm('photo', params.chat_id, params.photo, {
+      buildMediaForm('photo', params.chat_id, file, {
         caption:         params.caption,
         reply_to_id:     params.reply_to_id,
         delete_previous: params.delete_previous,
@@ -38,10 +39,11 @@ export class MessagesResource {
     )
   }
 
-  /** Send a video file. */
-  sendVideo(params: SendVideoParams): Promise<SendMediaResult> {
+  /** Send a video file or HTTP URL. */
+  async sendVideo(params: SendVideoParams): Promise<SendMediaResult> {
+    const file = await resolveFileInput(params.video, 'video.mp4')
     return this.http.postForm(`${this.base}/sendVideo`, () =>
-      buildMediaForm('video', params.chat_id, params.video, {
+      buildMediaForm('video', params.chat_id, file, {
         caption:         params.caption,
         reply_to_id:     params.reply_to_id,
         delete_previous: params.delete_previous,
@@ -50,10 +52,11 @@ export class MessagesResource {
     )
   }
 
-  /** Send a document / file. */
-  sendDocument(params: SendDocumentParams): Promise<SendMediaResult> {
+  /** Send a document / file or HTTP URL. */
+  async sendDocument(params: SendDocumentParams): Promise<SendMediaResult> {
+    const file = await resolveFileInput(params.document, 'document')
     return this.http.postForm(`${this.base}/sendDocument`, () =>
-      buildMediaForm('document', params.chat_id, params.document, {
+      buildMediaForm('document', params.chat_id, file, {
         caption:         params.caption,
         reply_to_id:     params.reply_to_id,
         delete_previous: params.delete_previous,
@@ -62,10 +65,11 @@ export class MessagesResource {
     )
   }
 
-  /** Send an audio file. */
-  sendAudio(params: SendAudioParams): Promise<SendMediaResult> {
+  /** Send an audio file or HTTP URL. */
+  async sendAudio(params: SendAudioParams): Promise<SendMediaResult> {
+    const file = await resolveFileInput(params.audio, 'audio.mp3')
     return this.http.postForm(`${this.base}/sendAudio`, () =>
-      buildMediaForm('audio', params.chat_id, params.audio, {
+      buildMediaForm('audio', params.chat_id, file, {
         caption:         params.caption,
         reply_to_id:     params.reply_to_id,
         delete_previous: params.delete_previous,

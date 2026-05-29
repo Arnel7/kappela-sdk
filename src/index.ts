@@ -13,8 +13,11 @@ export type {
   ReplySnapshot,
   Chat, ChatType, Participant,
   BotProfile, UserProfile, PrivacySetting,
+  // Participants
+  ParticipantRole,
   // Markup
-  ReplyMarkup, InlineKeyboard, ReplyKeyboard, ScrollKeyboard, InlineKeyboardButton,
+  ReplyMarkup, InlineKeyboard, ReplyKeyboard, ScrollKeyboard,
+  InlineKeyboardButton, ReplyKeyboardButton, ScrollKeyboardButton,
   // Carousel
   CarouselCard,
   // Webhook
@@ -26,6 +29,20 @@ export type {
   SendMessageParams, SendPhotoParams, SendVideoParams, SendDocumentParams,
   SendAudioParams, SendCarouselParams, SendTypingParams, DeleteMessageParams,
   EditMessageParams, SetWebhookParams, GetChatsParams,
+  // Chat member management
+  ChatMemberInfo,
+  AddChatMemberParams, AddChatMemberResult,
+  BanChatMemberParams, BanChatMemberResult,
+  LeaveChatParams, LeaveChatResult,
+  PromoteChatMemberParams, PromoteChatMemberResult,
+  GetChatAdministratorsParams, GetChatAdministratorsResult,
+  GetChatMemberParams,
+  // Invite links
+  ChatInviteLink,
+  CreateChatInviteLinkParams, GetChatInviteLinksParams, GetChatInviteLinksResult,
+  RevokeChatInviteLinkParams, RevokeChatInviteLinkResult,
+  // getMyGroups
+  BotGroupEntry, GetMyGroupsResult,
   // Events
   CallbackQuery,
   FileInput, KappelaWireEvent, WSMessageEvent, WSCallbackQueryEvent,

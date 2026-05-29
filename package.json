@@ -32,7 +32,9 @@
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node test-all.mjs",
+    "test:watch": "node test.mjs"
   },
   "dependencies": {
     "ws": "^8.18.0"

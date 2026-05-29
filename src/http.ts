@@ -141,9 +141,44 @@ function toArrayBuffer(buf: Uint8Array): ArrayBuffer {
   return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer
 }
 
+/**
+ * If `input` is an HTTP/HTTPS URL string, fetch it and return a named-wrapper
+ * `FileInput` object. Otherwise return the input unchanged.
+ *
+ * Call this **once** before building the FormData so the binary data is
+ * available for retry attempts without re-fetching.
+ */
+export async function resolveFileInput(
+  input: FileInput,
+  defaultFilename: string,
+): Promise<Exclude<FileInput, string>> {
+  if (typeof input !== 'string') return input
+
+  const url = input
+  const res = await fetch(url)
+  if (!res.ok) {
+    throw new KappelaError(
+      `Failed to fetch file from URL: HTTP ${res.status} — ${url}`,
+      'UPSTREAM_ERROR',
+      res.status,
+    )
+  }
+
+  // Derive filename from URL path (last segment before query string)
+  const urlPath  = new URL(url).pathname
+  const filename = urlPath.split('/').pop()?.split('?')[0] || defaultFilename
+
+  // Derive contentType from response headers, fall back to octet-stream
+  const contentType = res.headers.get('content-type')?.split(';')[0].trim()
+    ?? 'application/octet-stream'
+
+  const data = Buffer.from(await res.arrayBuffer())
+  return { data, filename, contentType }
+}
+
 /** Convert a FileInput to a Blob with an inferred filename. */
 export function fileInputToBlob(
-  input: FileInput,
+  input: Exclude<FileInput, string>,
   defaultFilename: string,
 ): [Blob, string] {
   if (input instanceof Blob) {
@@ -165,7 +200,7 @@ export function fileInputToBlob(
 export function buildMediaForm(
   fieldName:        string,
   chatId:           number,
-  file:             FileInput,
+  file:             Exclude<FileInput, string>,
   opts: {
     caption?:         string
     reply_to_id?:     number

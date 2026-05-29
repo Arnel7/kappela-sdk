@@ -1,6 +1,33 @@
+# ── Dependencies ──────────────────────────────────────────────────────────────
 node_modules/
+
+# ── Build output ──────────────────────────────────────────────────────────────
 dist/
 *.js.map
 *.tgz
+*.tsbuildinfo
+
+# ── Environment & secrets ──────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── Test files (non-committé — contiennent des tokens) ────────────────────────
 test.mjs
 test-all.mjs
+test-bot.mjs
+
+# ── OS / Editor ────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# ── Coverage ───────────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
