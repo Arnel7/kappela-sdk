@@ -20,6 +20,7 @@ Build bots and personal automations with full type safety and IDE autocomplete �
   - [Message fields](#message-fields)
   - [CallbackQuery fields](#callbackquery-fields)
 - [API reference](#api-reference)
+  - [bot.reply()](#botreplyctx-text-params--promisesendresult)
   - [messages](#messages)
     - [delete\_previous](#delete_previous--replace-the-last-bot-message)
   - [chats](#chats)
@@ -129,6 +130,7 @@ const { KappelaBot } = require('@kappelas/sdk')
 
 const bot = new KappelaBot({ token: '...' })
 
+bot.reply(msg, 'text')   // → shorthand for bot.messages.send with chat_id + reply_to_id pre-filled
 bot.messages.   // → send, sendPhoto, sendVideo, sendAudio, sendDocument, sendCarousel, edit, sendTyping, delete
 bot.chats.      // → list, iterate, getMyGroups, addMember, banMember, leaveChat, promoteMember, getAdministrators, getMember, createInviteLink, createSingleUseInviteLink, getInviteLinks, revokeInviteLink
 bot.webhooks.   // → set, getInfo, delete
@@ -312,6 +314,7 @@ Both `KappelaBot` and `KappelaUser` expose:
 | `.on(event, handler)` | Subscribe to `'message'`, `'callback_query'`, `'connected'`, `'disconnected'`, `'error'`. |
 | `.once(event, handler)` | Same as `.on()` but fires only once. |
 | `.off(event, handler)` | Remove a previously registered handler. Pass the same function reference used in `.on()`. |
+| `.reply(ctx, text, params?)` | Shorthand — reply to a `Message` or `CallbackQuery` without repeating `chat_id` / `reply_to_id`. |
 
 ```ts
 bot.start()
@@ -326,6 +329,50 @@ if (bot.connected) {
   await bot.messages.send({ chat_id: 42, text: 'Still here!' })
 }
 ```
+
+---
+
+### `bot.reply(ctx, text, params?)` → `Promise<SendResult>`
+
+Shorthand to reply to an incoming event without repeating `chat_id` and `reply_to_id` every time.
+
+| Argument | Type | Description |
+|----------|------|-------------|
+| `ctx` | `Message \| CallbackQuery` | The event to reply to |
+| `text` | `string` | Message text |
+| `params` | `object?` | Same optional fields as `messages.send()` — `reply_markup`, `delete_previous` |
+
+```ts
+// Instead of this:
+bot.on('message', async (msg) => {
+  await bot.messages.send({ chat_id: msg.chat_id, text: 'Got it!', reply_to_id: msg.id })
+})
+
+// Write this:
+bot.on('message', async (msg) => {
+  await bot.reply(msg, 'Got it! 👋')
+})
+
+// With options (keyboard, delete_previous, etc.)
+bot.on('message', async (msg) => {
+  await bot.reply(msg, 'Pick one:', {
+    reply_markup: {
+      inline_keyboard: [[
+        { text: '✅ Yes', callback_data: 'yes' },
+        { text: '❌ No',  callback_data: 'no'  },
+      ]],
+    },
+  })
+})
+
+// Also works on callback_query — sends to the same chat (no quote banner)
+bot.on('callback_query', async (cb) => {
+  await bot.reply(cb, `You clicked: ${cb.callback_data}`)
+})
+```
+
+> When `ctx` is a `Message`, `reply_to_id` is set automatically — the reply shows a quote banner.
+> When `ctx` is a `CallbackQuery`, only `chat_id` is used (callback queries have no message ID to quote).
 
 ---
 

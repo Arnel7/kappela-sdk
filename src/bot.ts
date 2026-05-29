@@ -5,7 +5,7 @@ import { MessagesResource } from './resources/messages.js'
 import { ChatsResource }    from './resources/chats.js'
 import { WebhooksResource } from './resources/webhooks.js'
 import { BotProfileResource } from './resources/profile.js'
-import type { Message, MessageType, CallbackQuery, KappelaWireEvent } from './types.js'
+import type { Message, MessageType, CallbackQuery, KappelaWireEvent, SendMessageParams, SendResult } from './types.js'
 import { toWsUrl } from './util.js'
 
 export interface KappelaBotOptions {
@@ -188,6 +188,43 @@ export class KappelaBot extends EventEmitter {
   stop(): this {
     this.ws.disconnect()
     return this
+  }
+
+  /**
+   * Convenience shorthand — send a text reply to a `message` or `callback_query` event
+   * without having to repeat `chat_id` and `reply_to_id` manually.
+   *
+   * - When called with a **`Message`** — sets `reply_to_id` automatically (shows a quote banner).
+   * - When called with a **`CallbackQuery`** — sends to the same chat, no quote banner
+   *   (callback queries have no message ID to quote).
+   *
+   * @example
+   * ```ts
+   * bot.on('message', async (msg) => {
+   *   await bot.reply(msg, 'Got it! 👋')
+   *
+   *   // With options
+   *   await bot.reply(msg, 'Pick one:', {
+   *     reply_markup: { inline_keyboard: [[{ text: 'OK', callback_data: 'ok' }]] }
+   *   })
+   * })
+   *
+   * bot.on('callback_query', async (cb) => {
+   *   await bot.reply(cb, `You clicked: ${cb.callback_data}`)
+   * })
+   * ```
+   */
+  reply(
+    ctx:     Message | CallbackQuery,
+    text:    string,
+    params?: Omit<SendMessageParams, 'chat_id' | 'text' | 'reply_to_id'>,
+  ): Promise<SendResult> {
+    return this.messages.send({
+      chat_id:     ctx.chat_id,
+      text,
+      reply_to_id: 'id' in ctx ? ctx.id : undefined,
+      ...params,
+    })
   }
 
   /** `true` if the WebSocket is currently open. */
