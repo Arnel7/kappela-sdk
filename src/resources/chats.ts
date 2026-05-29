@@ -118,8 +118,10 @@ export class ChatsResource {
    *   console.log(a.user_id, a.role)  // role is always "admin"
    * }
    */
-  getAdministrators(params: GetChatAdministratorsParams): Promise<GetChatAdministratorsResult> {
-    return this.http.post(`${this.base}/getChatAdministrators`, params)
+  async getAdministrators(params: GetChatAdministratorsParams): Promise<GetChatAdministratorsResult> {
+    // The API returns the admins array directly as result (not wrapped in { admins: [...] }).
+    const admins = await this.http.post<ChatMemberInfo[]>(`${this.base}/getChatAdministrators`, params)
+    return { admins: admins ?? [] }
   }
 
   /**
